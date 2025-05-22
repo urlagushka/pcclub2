@@ -57,7 +57,7 @@ pc::club::satisfy_queue()
     return std::nullopt;
   }
 
-  auto found = std::find_if(__table.begin() + 1, __table.end(), [](const table_vec & lhs)
+  auto found = std::find_if(__table.begin() + 1, __table.end(), [](const table & lhs)
   {
     return !lhs.first.has_value();
   });
@@ -139,7 +139,7 @@ pc::club::is_client_inside(const client & rhs) const
 bool
 pc::club::are_free_table() const
 {
-  auto found = std::find_if(__table.begin() + 1, __table.end(), [](const table_vec & lhs)
+  auto found = std::find_if(__table.begin() + 1, __table.end(), [](const table & lhs)
   {
     return !lhs.first.has_value();
   });
@@ -165,19 +165,19 @@ pc::club::get_client_it(const client & rhs) const
   });
 }
 
-std::vector< pc::club::table_vec >::iterator
+std::vector< pc::club::table >::iterator
 pc::club::get_table_it(const client & rhs)
 {
-  return std::find_if(__table.begin(), __table.end(), [& rhs](table_vec & lhs)
+  return std::find_if(__table.begin(), __table.end(), [& rhs](table & lhs)
   {
     return lhs.first.has_value() && lhs.first->name == rhs.name;
   });
 }
 
-std::vector< pc::club::table_vec >::const_iterator
+std::vector< pc::club::table >::const_iterator
 pc::club::get_table_it(const client & rhs) const
 {
-  return std::find_if(__table.cbegin(), __table.cend(), [& rhs](const table_vec & lhs)
+  return std::find_if(__table.cbegin(), __table.cend(), [& rhs](const table & lhs)
   {
     return lhs.first.has_value() && lhs.first->name == rhs.name;
   });

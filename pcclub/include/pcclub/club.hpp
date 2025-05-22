@@ -13,7 +13,7 @@ namespace pc
 {
   class club
   {
-    using table_vec = std::pair< std::optional< client >, std::chrono::minutes >;
+    using table = std::pair< std::optional< client >, std::chrono::minutes >;
     using profit = std::tuple< std::size_t, size_t, time_stamp >;
     public:
       club() = delete;
@@ -37,7 +37,7 @@ namespace pc
 
     private:
       std::deque< client > __client;
-      std::vector< table_vec > __table;
+      std::vector< table > __table;
 
       time_stamp __open;
       time_stamp __close;
@@ -47,8 +47,8 @@ namespace pc
       std::deque< client >::iterator get_client_it(const client & rhs);
       std::deque< client >::const_iterator get_client_it(const client & rhs) const;
       
-      std::vector< table_vec >::iterator get_table_it(const client & rhs);
-      std::vector< table_vec >::const_iterator get_table_it(const client & rhs) const;
+      std::vector< table >::iterator get_table_it(const client & rhs);
+      std::vector< table >::const_iterator get_table_it(const client & rhs) const;
   };
 }
 

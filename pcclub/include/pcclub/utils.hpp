@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <vector>
 #include <string_view>
+#include <ostream>
 
 namespace pc::utils
 {
@@ -13,7 +14,13 @@ namespace pc::utils
   get_path_from_string(std::string_view path);
 
   void
-  verify_file_path(const std::filesystem::path & path);
+  verify_file_path(const fs::path & path);
+
+  bool
+  verify_file_path_no_throw(const fs::path & path);
+
+  bool
+  verify_file_data_no_throw(const fs::path & path, std::ostream & out);
 }
 
 #endif

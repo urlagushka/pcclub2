@@ -2,8 +2,34 @@
 
 #include <unordered_map>
 
+std::istream &
+pc::operator>>(std::istream & in, event_fields & fields)
+{
+  in >> fields.time >> fields.id >> fields.str_data;
+  if (!in.eof())
+  {
+    std::size_t tmp = 0;
+    in >> tmp;
+    fields.sub_data = tmp;
+  }
+
+  return in;
+}
+
+std::ostream &
+pc::operator<<(std::ostream & out, const event_fields & fields)
+{
+  out << std::format("{} {} {}", fields.time, fields.id, fields.str_data);
+  if (fields.sub_data.has_value())
+  {
+    out << std::format(" {}", fields.sub_data.value());
+  }
+
+  return out;
+}
+
 pc::event_ret
-pc::event_call(std::size_t id, club & ft_club, const uts & ts, const std::string & str_data, std::size_t sub_data)
+pc::event_call(club & m_club, const event_fields & fields)
 {
   using event_signature = event_ret (*)(club &, const uts &, const std::string &, std::size_t);
   static std::unordered_map< std::size_t, event_signature > event_map = {
@@ -16,7 +42,7 @@ pc::event_call(std::size_t id, club & ft_club, const uts & ts, const std::string
     {13, event_13}
   };
 
-  return event_map.at(id)(ft_club, ts, str_data, sub_data);
+  return event_map.at(fields.id)(m_club, fields.time, fields.str_data, fields.sub_data.value_or(0));
 }
 
 pc::event_ret

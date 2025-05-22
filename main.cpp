@@ -4,6 +4,7 @@
 #include <chrono>
 #include <format>
 #include <locale>
+#include <limits>
 
 #include <pcclub/events.hpp>
 #include <pcclub/club.hpp>
@@ -26,51 +27,39 @@ int main(int argc, char ** argv)
   pc::time_stamp open{};
   pc::time_stamp close{};
   std::size_t price = 0;
-
   in >> table >> open >> close >> price;
-
+  in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
   if (!in)
   {
     std::cerr << "input error! (init stage)\n";
     return 1;
   }
-
   std::cout << std::format("{}\n", open);
+
+  // buf
+  std::string line;
   pc::club club(open, close, price, table);
-  while (in)
+  while (std::getline(in, line))
   {
-    pc::time_stamp time{};
-    std::size_t event_id = 0;
-    std::string str_data;
-    std::size_t sub_data = 0;
-
-    in >> time >> event_id >> str_data;
-    if (event_id == 2)
+    std::stringstream iss(line);
+    pc::event_fields fields;
+    iss >> fields;
+    if (!iss)
     {
-      in >> sub_data;
-    }
-
-    if (!in)
-    {
+      std::cout.clear();
+      std::cout << line << "\n";
       break;
     }
-
-    if (sub_data)
+    
+    std::cout << fields << "\n";
+    while (fields.id != 0)
     {
-      std::cout << std::format("{} {} {} {}\n", time, event_id, str_data, sub_data);
-    }
-    else
-    {
-      std::cout << std::format("{} {} {}\n", time, event_id, str_data);
-    }
-    while (event_id != 0)
-    {
-      auto event_out = event_call(event_id, club, time, str_data, sub_data);
-      str_data = event_out.first;
-      event_id = event_out.second;
-      if (event_id != 0)
+      auto event_out = event_call(club, fields);
+      fields.str_data = event_out.first;
+      fields.id = event_out.second;
+      if (fields.id != 0)
       {
-        std::cout << std::format("{} {} {}\n", time, event_id, str_data);
+        std::cout << fields << "\n";
       }
     }
   }
