@@ -11,8 +11,8 @@ namespace pc
 {
   struct client_time
   {
-    std::optional< time_stamp > in_time;
-    std::optional< time_stamp > out_time;
+    std::optional< time_stamp > in;
+    std::optional< time_stamp > out;
   };
 
   struct client

@@ -5,6 +5,7 @@
 #include <format>
 #include <sstream>
 #include <iomanip>
+#include <charconv>
 
 pc::time_stamp::time_stamp(std::chrono::minutes rhs):
   hours(std::chrono::duration_cast< std::chrono::hours >(rhs)),
@@ -59,21 +60,34 @@ pc::operator>>(std::istream & in, time_stamp & ts)
   std::string tmp;
   in >> tmp;
 
-  try
-  {
-    ts.hours = std::chrono::hours(std::stoi(tmp.substr(0, 2)));
-    ts.minutes = std::chrono::minutes(std::stoi(tmp.substr(3, 5)));
-  }
-  catch (const std::invalid_argument &)
+  if (tmp.size() != 5 || tmp[2] != ':')
   {
     in.setstate(std::ios_base::failbit);
   }
+
+  int hours = 0;
+  int minutes = 0;
+
+  auto [ptr_h, ec_h] = std::from_chars(tmp.data(), tmp.data() + 2, hours);
+  auto [ptr_m, ec_m] = std::from_chars(tmp.data() + 3, tmp.data() + 5, minutes);
+
+  if (ec_h != std::errc() || ec_m != std::errc())
+  {
+    in.setstate(std::ios_base::failbit);
+  }
+  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59)
+  {
+    in.setstate(std::ios_base::failbit);
+  }
+
+  ts.hours = std::chrono::hours(hours);
+  ts.minutes = std::chrono::minutes(minutes);
 
   return in;
 }
 
 std::ostream &
-pc::operator>>(std::ostream & out, const time_stamp & ts)
+pc::operator<<(std::ostream & out, const time_stamp & ts)
 {
   out << std::setfill('0') << std::setw(2) << ts.hours.count() << ":";
   out << std::setfill('0') << std::setw(2) << ts.minutes.count() << "\n";

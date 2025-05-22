@@ -21,7 +21,7 @@ pc::club::add_client(const client & rhs)
     throw std::runtime_error("YouShallNotPass");
   }
 
-  if (!is_open(rhs.time.in_time.value()))
+  if (!is_open(rhs.time.in.value()))
   {
     throw std::runtime_error("NotOpenYet");
   }
@@ -45,7 +45,7 @@ pc::club::pop_client(const client & rhs)
   }
 
   auto in_table = get_table_it(rhs);
-  in_table->first->time.out_time = rhs.time.out_time;
+  in_table->first->time.out = rhs.time.out;
   free_table(in_table->first.value());
 }
 
@@ -86,12 +86,12 @@ pc::club::take_table(const client & rhs, std::size_t table)
   auto old_place = get_table_it(rhs);
   if (old_place != __table.end())
   {
-    old_place->first.value().time.out_time = rhs.time.in_time;
+    old_place->first.value().time.out = rhs.time.in;
     free_table(old_place->first.value());
   }
 
   auto in_client = get_client_it(rhs);
-  in_client->time.in_time = rhs.time.in_time;
+  in_client->time.in = rhs.time.in;
   __table[table].first = *in_client;
   __client.erase(in_client);
 }
@@ -105,8 +105,8 @@ pc::club::free_table(const client & rhs)
     return;
   }
 
-  auto in = found->first.value().time.in_time.value().to_minutes();
-  auto out = found->first.value().time.out_time.value().to_minutes();
+  auto in = found->first.value().time.in.value().to_minutes();
+  auto out = found->first.value().time.out.value().to_minutes();
   auto diff = out - in;
   found->second += diff;
   found->first = std::nullopt;
@@ -137,7 +137,7 @@ pc::club::is_client_inside(const client & rhs) const
 }
 
 bool
-pc::club::is_free_table() const
+pc::club::are_free_table() const
 {
   auto found = std::find_if(__table.begin() + 1, __table.end(), [](const table_vec & lhs)
   {
@@ -190,10 +190,10 @@ pc::club::lock_in_profits()
   {
     if (table.first.has_value())
     {
-      table.first->time.out_time = __close;
+      table.first->time.out = __close;
 
-      auto in = table.first.value().time.in_time.value().to_minutes();
-      auto out = table.first.value().time.out_time.value().to_minutes();
+      auto in = table.first.value().time.in.value().to_minutes();
+      auto out = table.first.value().time.out.value().to_minutes();
       auto diff = out - in;
       table.second += diff;
     }

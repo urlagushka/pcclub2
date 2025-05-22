@@ -26,7 +26,7 @@ namespace pc
   };
 
   std::istream & operator>>(std::istream & in, time_stamp & ts);
-  std::ostream & operator>>(std::ostream & out, const time_stamp & ts);
+  std::ostream & operator<<(std::ostream & out, const time_stamp & ts);
 }
 
 template <>

@@ -6,7 +6,7 @@ pc::event_ret
 pc::event_call(std::size_t id, club & ft_club, const uts & ts, const std::string & str_data, std::size_t sub_data)
 {
   using event_signature = event_ret (*)(club &, const uts &, const std::string &, std::size_t);
-  std::unordered_map< std::size_t, event_signature > event_map = {
+  static std::unordered_map< std::size_t, event_signature > event_map = {
     {1, event_1},
     {2, event_2},
     {3, event_3},
@@ -67,7 +67,7 @@ pc::event_3(club & ft_club, const uts & ts, const std::string & name, std::size_
     {std::nullopt, std::nullopt}
   };
 
-  if (ft_club.is_free_table())
+  if (ft_club.are_free_table())
   {
     return std::make_pair("ICanWaitNoLonger", 13);
   }

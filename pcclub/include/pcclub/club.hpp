@@ -31,7 +31,7 @@ namespace pc
 
       bool is_open(const time_stamp & rhs) const;
       bool is_client_inside(const client & rhs) const;
-      bool is_free_table() const;
+      bool are_free_table() const;
 
       std::vector< profit > lock_in_profits();
 
