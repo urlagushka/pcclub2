@@ -31,7 +31,7 @@ pc::operator<<(std::ostream & out, const event_fields & fields)
 pc::event_ret
 pc::event_call(club & m_club, const event_fields & fields)
 {
-  using event_signature = event_ret (*)(club &, const uts &, const std::string &, std::size_t);
+  using event_signature = event_ret (*)(club &, const ts &, const std::string &, std::size_t);
   static std::unordered_map< std::size_t, event_signature > event_map = {
     {1, event_1},
     {2, event_2},
@@ -46,16 +46,16 @@ pc::event_call(club & m_club, const event_fields & fields)
 }
 
 pc::event_ret
-pc::event_1(club & ft_club, const uts & ts, const std::string & name, std::size_t)
+pc::event_1(club & m_club, const ts & m_ts, const std::string & name, std::size_t)
 {
-  client ft_client = {
+  client m_client = {
     name,
-    {ts, std::nullopt}
+    {m_ts, std::nullopt}
   };
 
   try
   {
-    ft_club.add_client(ft_client);
+    m_club.add_client(m_client);
   }
   catch (const std::runtime_error & error)
   {
@@ -66,16 +66,16 @@ pc::event_1(club & ft_club, const uts & ts, const std::string & name, std::size_
 }
 
 pc::event_ret
-pc::event_2(club & ft_club, const uts & ts, const std::string & name, std::size_t table)
+pc::event_2(club & m_club, const ts & m_ts, const std::string & name, std::size_t table)
 {
-  client ft_client = {
+  client m_client = {
     name,
-    {ts, std::nullopt}
+    {m_ts, std::nullopt}
   };
 
   try
   {
-    ft_club.take_table(ft_client, table);
+    m_club.take_table(m_client, table);
   }
   catch (const std::runtime_error & error)
   {
@@ -86,18 +86,13 @@ pc::event_2(club & ft_club, const uts & ts, const std::string & name, std::size_
 }
 
 pc::event_ret
-pc::event_3(club & ft_club, const uts & ts, const std::string & name, std::size_t sub_data)
+pc::event_3(club & m_club, const ts & m_ts, const std::string & name, std::size_t sub_data)
 {
-  client ft_client = {
-    name,
-    {std::nullopt, std::nullopt}
-  };
-
-  if (ft_club.are_free_table())
+  if (m_club.are_free_table())
   {
     return std::make_pair("ICanWaitNoLonger", 13);
   }
-  if (ft_club.client_size() > ft_club.table_size())
+  if (m_club.client_size() > m_club.table_size())
   {
     return std::make_pair(name, 11);
   }
@@ -106,17 +101,36 @@ pc::event_3(club & ft_club, const uts & ts, const std::string & name, std::size_
 }
 
 pc::event_ret
-pc::event_4(club & ft_club, const uts & ts, const std::string & name, std::size_t)
+pc::event_4(club & m_club, const ts & m_ts, const std::string & name, std::size_t)
 {
-  client ft_client = {
+  client m_client = {
     name,
-    {std::nullopt, ts}
+    {std::nullopt, m_ts}
   };
 
   try
   {
-    ft_club.pop_client(ft_client);
-    return std::make_pair(name, 12);
+    m_club.pop_client(m_client);
+  }
+  catch (const std::runtime_error & error)
+  {
+    return std::make_pair(error.what(), 13);
+  }
+
+  return std::make_pair(name, 12);
+}
+
+pc::event_ret
+pc::event_11(club & ft_club, const ts & m_ts, const std::string & name, std::size_t)
+{
+  client m_client = {
+    name,
+    {std::nullopt, m_ts}
+  };
+
+  try
+  {
+    ft_club.pop_client(m_client);
   }
   catch (const std::runtime_error & error)
   {
@@ -127,29 +141,9 @@ pc::event_4(club & ft_club, const uts & ts, const std::string & name, std::size_
 }
 
 pc::event_ret
-pc::event_11(club & ft_club, const uts & ts, const std::string & name, std::size_t)
+pc::event_12(club & m_club, const ts & m_ts, const std::string & str_data, std::size_t)
 {
-  client ft_client = {
-    name,
-    {std::nullopt, ts}
-  };
-
-  try
-  {
-    ft_club.pop_client(ft_client);
-  }
-  catch (const std::runtime_error & error)
-  {
-    return std::make_pair(error.what(), 13);
-  }
-
-  return std::make_pair(name, 0);
-}
-
-pc::event_ret
-pc::event_12(club & ft_club, const uts & ts, const std::string & str_data, std::size_t)
-{
-  auto ret = ft_club.satisfy_queue();
+  auto ret = m_club.satisfy_queue();
   if (ret.has_value())
   {
     return std::make_pair(ret.value(), 0);
@@ -158,7 +152,7 @@ pc::event_12(club & ft_club, const uts & ts, const std::string & str_data, std::
 }
 
 pc::event_ret
-pc::event_13(club & ft_club, const uts & ts, const std::string & error, std::size_t)
+pc::event_13(club & m_club, const ts & m_ts, const std::string & error, std::size_t)
 {
   return std::make_pair(error, 0);
 }

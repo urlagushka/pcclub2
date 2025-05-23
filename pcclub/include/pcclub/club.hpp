@@ -13,24 +13,25 @@ namespace pc
 {
   class club
   {
+    using ts = time_stamp;
     using table = std::pair< std::optional< client >, std::chrono::minutes >;
-    using profit = std::tuple< std::size_t, size_t, time_stamp >;
+    using profit = std::tuple< std::size_t, std::size_t, ts >;
     public:
       club() = delete;
-      club(time_stamp open, time_stamp close, std::size_t price, std::size_t table);
+      club(const ts & open, const ts & close, std::size_t price, std::size_t table_size);
 
-      void add_client(const client & rhs);
-      void pop_client(const client & rhs);
+      void add_client(const client & m_client);
+      void pop_client(const client & m_client);
       std::optional< std::string > satisfy_queue();
 
-      void take_table(const client & rhs, std::size_t table);
-      void free_table(const client & rhs);
+      void take_table(const client & m_client, std::size_t table_id);
+      void free_table(const client & m_client);
 
       std::size_t table_size() const;
       std::size_t client_size() const;
 
-      bool is_open(const time_stamp & rhs) const;
-      bool is_client_inside(const client & rhs) const;
+      bool is_open(const ts & m_ts) const;
+      bool is_client_inside(const client & m_client) const;
       bool are_free_table() const;
 
       std::vector< profit > lock_in_profits();
@@ -44,11 +45,11 @@ namespace pc
 
       std::size_t __price;
 
-      std::deque< client >::iterator get_client_it(const client & rhs);
-      std::deque< client >::const_iterator get_client_it(const client & rhs) const;
+      std::deque< client >::iterator get_client_it(const client & m_client);
+      std::deque< client >::const_iterator get_client_it(const client & m_client) const;
       
-      std::vector< table >::iterator get_table_it(const client & rhs);
-      std::vector< table >::const_iterator get_table_it(const client & rhs) const;
+      std::vector< table >::iterator get_table_it(const client & m_client);
+      std::vector< table >::const_iterator get_table_it(const client & m_client) const;
   };
 }
 
