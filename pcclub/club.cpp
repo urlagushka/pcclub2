@@ -146,23 +146,30 @@ pc::club::are_free_table() const
   return get_free_table_it() != __table.end();
 }
 
-std::vector< pc::club::profit >
-pc::club::lock_in_profits()
+std::vector< pc::client >
+pc::club::get_client_alphabet()
 {
-  for (auto & table : __table)
-  {
-    if (table.m_client.has_value())
-    {
-      table.m_client->time.out = __close;
+  std::vector< client > ret(__client.begin(), __client.end());
 
-      auto in = table.m_client.value().time.in.value().to_minutes();
-      auto out = table.m_client.value().time.out.value().to_minutes();
-      auto diff = out - in;
-      table.total_time += diff;
-      table.total_price += static_cast< std::size_t >(std::ceil(diff.count() / 60.0)) * __price;
+  for (const auto & i : __table)
+  {
+    if (i.m_client.has_value())
+    {
+      ret.push_back(i.m_client.value());
     }
   }
 
+  std::sort(ret.begin(), ret.end(), [](const client & lhs, const client & rhs)
+  {
+    return lhs.name > rhs.name;
+  });
+
+  return ret;
+}
+
+std::vector< pc::club::profit >
+pc::club::lock_in_profits()
+{
   std::vector< pc::club::profit > profits;
   profits.reserve(__table.size());
   for (std::size_t i = 0; i < __table.size(); ++i)

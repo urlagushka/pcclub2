@@ -53,7 +53,7 @@ int main(int argc, char ** argv)
     std::cout << fields << "\n";
     while (fields.id != 0)
     {
-      auto event_out = event_call(club, fields);
+      auto event_out = pc::event_call(club, fields);
       fields.str_data = event_out.first;
       fields.id = event_out.second;
       if (fields.id != 0)
@@ -70,8 +70,13 @@ int main(int argc, char ** argv)
     return 1;
   }
 
-  // event 11
-
+  auto clients = club.get_client_alphabet();
+  for (const auto & cl : clients)
+  {
+    pc::event_fields fields = {close, 11, cl.name};
+    pc::event_call(club, fields);
+    std::cout << fields << "\n";
+  }
   std::cout << std::format("{}\n", close);
 
   auto profits = club.lock_in_profits();

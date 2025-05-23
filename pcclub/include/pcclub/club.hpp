@@ -33,6 +33,7 @@ namespace pc
       bool is_client_inside(const client & m_client) const;
       bool are_free_table() const;
 
+      std::vector< client > get_client_alphabet();
       std::vector< profit > lock_in_profits();
 
     private:
