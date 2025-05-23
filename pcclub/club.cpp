@@ -2,10 +2,11 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 pc::club::club(const ts & open, const ts & close, std::size_t price, std::size_t table_size):
   __client(0),
-  __table(table_size + 1, std::make_pair(std::nullopt, std::chrono::minutes(0))),
+  __table(table_size, std::make_pair(std::nullopt, std::chrono::minutes(0))),
 
   __open(open),
   __close(close),
@@ -26,7 +27,7 @@ pc::club::add_client(const client & m_client)
     throw std::runtime_error("NotOpenYet");
   }
 
-  __client.push_front(m_client);
+  __client.push_back(m_client);
 }
 
 void
@@ -37,43 +38,43 @@ pc::club::pop_client(const client & m_client)
     throw std::runtime_error("ClientUnknown");
   }
 
-  auto in_client = get_client_it(m_client);
-  if (in_client != __client.end())
+  auto d_table = get_table_it(m_client);
+  if (d_table != __table.end())
   {
-    __client.erase(in_client);
-    return;
+    d_table->first->time.out = m_client.time.out;
+    free_table(d_table->first.value());
   }
 
-  auto in_table = get_table_it(m_client);
-  in_table->first->time.out = m_client.time.out;
-  free_table(in_table->first.value());
+  auto d_client = get_client_it(m_client);
+  __client.erase(d_client);  
 }
 
 std::optional< std::string >
-pc::club::satisfy_queue()
+pc::club::satisfy_queue(const ts & m_ts)
 {
   if (__client.size() == 0)
   {
     return std::nullopt;
   }
 
-  auto found = std::find_if(__table.begin() + 1, __table.end(), [](const table & lhs)
-  {
-    return !lhs.first.has_value();
-  });
-  if (found != __table.end())
+  auto found = get_free_table_it();
+  if (found == __table.end())
   {
     return std::nullopt;
   }
-
-  auto to_ret = found->first.value().name;
-  take_table(__client.back(), std::distance(__table.begin(), found));
-  return to_ret;
+  auto n_client = __client.front();
+  n_client.time.in = m_ts;
+  take_table(n_client, std::distance(__table.begin(), found) + 1);
+  return n_client.name;
 }
 
 void
 pc::club::take_table(const client & m_client, std::size_t table_id)
 {
+  if (--table_id > __table.size())
+  {
+    throw std::out_of_range("table_id is out of range!");
+  }
   if (!is_client_inside(m_client))
   {
     throw std::runtime_error("ClientUnknown");
@@ -108,8 +109,10 @@ pc::club::free_table(const client & m_client)
   auto in = found->first.value().time.in.value().to_minutes();
   auto out = found->first.value().time.out.value().to_minutes();
   auto diff = out - in;
+
   found->second += diff;
   found->first = std::nullopt;
+  __client.push_back(m_client);
 }
 
 std::size_t
@@ -139,12 +142,36 @@ pc::club::is_client_inside(const client & m_client) const
 bool
 pc::club::are_free_table() const
 {
-  auto found = std::find_if(__table.begin() + 1, __table.end(), [](const table & lhs)
-  {
-    return !lhs.first.has_value();
-  });
+  return get_free_table_it() != __table.end();
+}
 
-  return found != __table.end();
+std::vector< pc::club::profit >
+pc::club::lock_in_profits()
+{
+  for (auto & table : __table)
+  {
+    if (table.first.has_value())
+    {
+      std::cout << table.first->name << "\n";
+      table.first->time.out = __close;
+
+      auto in = table.first.value().time.in.value().to_minutes();
+      auto out = table.first.value().time.out.value().to_minutes();
+      auto diff = out - in;
+      table.second += diff;
+    }
+  }
+
+  std::vector< pc::club::profit > profits;
+  profits.reserve(__table.size());
+  for (std::size_t i = 0; i < __table.size(); ++i)
+  {
+    std::size_t price = static_cast< std::size_t >(std::ceil(__table[i].second.count() / 60.0)) * __price;
+    time_stamp time(__table[i].second);
+    profits.push_back(std::make_tuple(i + 1, price, time));
+  }
+
+  return profits;
 }
 
 std::deque< pc::client >::iterator
@@ -183,30 +210,24 @@ pc::club::get_table_it(const client & m_client) const
   });
 }
 
-std::vector< pc::club::profit >
-pc::club::lock_in_profits()
+std::vector< pc::club::table >::iterator
+pc::club::get_free_table_it()
 {
-  for (auto & table : __table)
+  auto found = std::find_if(__table.begin(), __table.end(), [](const table & lhs)
   {
-    if (table.first.has_value())
-    {
-      table.first->time.out = __close;
+    return !lhs.first.has_value();
+  });
 
-      auto in = table.first.value().time.in.value().to_minutes();
-      auto out = table.first.value().time.out.value().to_minutes();
-      auto diff = out - in;
-      table.second += diff;
-    }
-  }
+  return found;
+}
 
-  std::vector< pc::club::profit > profits;
-  profits.reserve(__table.size());
-  for (std::size_t i = 1; i < __table.size(); ++i)
+std::vector< pc::club::table >::const_iterator
+pc::club::get_free_table_it() const
+{
+  auto found = std::find_if(__table.cbegin(), __table.cend(), [](const table & lhs)
   {
-    std::size_t price = static_cast< std::size_t >(std::ceil(__table[i].second.count() / 60.0)) * __price;
-    time_stamp time(__table[i].second);
-    profits.push_back(std::make_tuple(i, price, time));
-  }
+    return !lhs.first.has_value();
+  });
 
-  return profits;
+  return found;
 }

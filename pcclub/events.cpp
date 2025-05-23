@@ -1,6 +1,7 @@
 #include <pcclub/events.hpp>
 
 #include <unordered_map>
+#include <iostream>
 
 std::istream &
 pc::operator>>(std::istream & in, event_fields & fields)
@@ -117,7 +118,11 @@ pc::event_4(club & m_club, const ts & m_ts, const std::string & name, std::size_
     return std::make_pair(error.what(), 13);
   }
 
-  return std::make_pair(name, 12);
+  if (m_club.client_size() != 0)
+  {
+    return std::make_pair(name, 12);
+  }
+  return std::make_pair(name, 0);
 }
 
 pc::event_ret
@@ -143,7 +148,7 @@ pc::event_11(club & ft_club, const ts & m_ts, const std::string & name, std::siz
 pc::event_ret
 pc::event_12(club & m_club, const ts & m_ts, const std::string & str_data, std::size_t)
 {
-  auto ret = m_club.satisfy_queue();
+  auto ret = m_club.satisfy_queue(m_ts);
   if (ret.has_value())
   {
     return std::make_pair(ret.value(), 0);

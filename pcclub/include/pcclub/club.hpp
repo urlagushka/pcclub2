@@ -22,7 +22,7 @@ namespace pc
 
       void add_client(const client & m_client);
       void pop_client(const client & m_client);
-      std::optional< std::string > satisfy_queue();
+      std::optional< std::string > satisfy_queue(const ts & m_ts);
 
       void take_table(const client & m_client, std::size_t table_id);
       void free_table(const client & m_client);
@@ -50,6 +50,9 @@ namespace pc
       
       std::vector< table >::iterator get_table_it(const client & m_client);
       std::vector< table >::const_iterator get_table_it(const client & m_client) const;
+
+      std::vector< table >::iterator get_free_table_it();
+      std::vector< table >::const_iterator get_free_table_it() const;
   };
 }
 

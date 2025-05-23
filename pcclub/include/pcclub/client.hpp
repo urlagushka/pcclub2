@@ -20,6 +20,13 @@ namespace pc
     std::string name;
     client_time time;
   };
+
+  struct table
+  {
+    std::optional< client > m_client;
+    std::chrono::minutes total_time;
+    std::size_t total_price;
+  };
 }
 
 #endif
