@@ -14,7 +14,6 @@ namespace pc
   class club
   {
     using ts = time_stamp;
-    using table = std::pair< std::optional< client >, std::chrono::minutes >;
     using profit = std::tuple< std::size_t, std::size_t, ts >;
     public:
       club() = delete;

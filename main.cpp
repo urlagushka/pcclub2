@@ -69,6 +69,9 @@ int main(int argc, char ** argv)
     buf.flush();
     return 1;
   }
+
+  // event 11
+
   std::cout << std::format("{}\n", close);
 
   auto profits = club.lock_in_profits();
