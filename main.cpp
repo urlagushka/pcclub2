@@ -52,7 +52,16 @@ int main(int argc, char ** argv)
       }
 
       std::cout << fields << "\n";
-      auto event_out = pc::event_call(club, fields);
+      pc::event_ret event_out;
+      try
+      {
+        event_out = pc::event_call(club, fields);
+      }
+      catch (const std::out_of_range & error)
+      {
+        was_error = true;
+        break;
+      }
 
       if (event_out.next_event != 0)
       {
@@ -94,10 +103,6 @@ int main(int argc, char ** argv)
       std::cout << std::format("{} {} {}\n", id, time, price);
     }
     buf.flush();
-  }
-  catch (const std::out_of_range & error)
-  {
-    std::cerr << std::format("out_of_range: {}\n", error.what());
   }
   catch (const std::runtime_error & error)
   {
