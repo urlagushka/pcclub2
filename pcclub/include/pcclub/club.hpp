@@ -6,7 +6,7 @@
 #include <optional>
 #include <tuple>
 
-#include <pcclub/client.hpp>
+#include <pcclub/club_structs.hpp>
 #include <pcclub/time.hpp>
 
 namespace pc

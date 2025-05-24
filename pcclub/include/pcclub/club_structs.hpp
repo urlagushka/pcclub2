@@ -1,5 +1,5 @@
-#ifndef PC_CLUB_CLIENT_HPP
-#define PC_CLUB_CLIENT_HPP
+#ifndef PC_CLUB_CLUB_STRUCTS_HPP
+#define PC_CLUB_CLUB_STRUCTS_HPP
 
 #include <chrono>
 #include <optional>

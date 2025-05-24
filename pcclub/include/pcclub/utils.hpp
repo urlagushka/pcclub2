@@ -15,12 +15,6 @@ namespace pc::utils
 
   void
   verify_file_path(const fs::path & path);
-
-  bool
-  verify_file_path_no_throw(const fs::path & path);
-
-  bool
-  verify_file_data_no_throw(const fs::path & path, std::ostream & out);
 }
 
 #endif
