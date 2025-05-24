@@ -15,6 +15,7 @@ namespace pc
 
     time_stamp() = default;
     time_stamp(std::chrono::minutes rhs);
+    time_stamp(std::size_t h, std::size_t m);
     std::chrono::minutes to_minutes() const;
 
     bool operator==(const time_stamp & rhs) const;

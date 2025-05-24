@@ -71,7 +71,7 @@ pc::club::satisfy_queue(const ts & m_ts)
 void
 pc::club::take_table(const client & m_client, std::size_t table_id)
 {
-  if (--table_id > __table.size())
+  if (--table_id >= __table.size())
   {
     throw std::out_of_range("table_id is out of range!");
   }

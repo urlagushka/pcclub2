@@ -12,6 +12,11 @@ pc::time_stamp::time_stamp(std::chrono::minutes rhs):
   minutes(rhs - hours)
 {}
 
+pc::time_stamp::time_stamp(std::size_t h, std::size_t m):
+  hours(std::chrono::hours(h)),
+  minutes(std::chrono::minutes(m))
+{}
+
 std::chrono::minutes
 pc::time_stamp::to_minutes() const
 {
