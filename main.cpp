@@ -51,17 +51,13 @@ int main(int argc, char ** argv)
     }
 
     std::cout << fields << "\n";
-    while (fields.id != 0)
+    auto event_out = pc::event_call(club, fields);
+
+    if (event_out.next_event != 0)
     {
-      auto event_out = pc::event_call(club, fields);
-      fields.sub_data = event_out.sub_data;
-      fields.str_data = event_out.str_data;
-      fields.id = event_out.next_event;
-      
-      if (fields.id != 0)
-      {
-        std::cout << fields << "\n";
-      }
+      auto last_out = pc::event_call(club, {fields.time, event_out.next_event, event_out.str_data, event_out.sub_data});
+      pc::event_fields tmp = {fields.time, event_out.next_event, last_out.str_data, last_out.sub_data};
+      std::cout << tmp << "\n";
     }
   }
   if (was_error)
