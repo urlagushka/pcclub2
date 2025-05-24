@@ -1,11 +1,25 @@
 #include <pcclub/events.hpp>
 
 #include <unordered_map>
+#include <regex>
+
+namespace
+{
+  /*
+  в последний момент заметил, что это нужно, пришлось так (
+  */
+  static pc::time_stamp last_call{0, 0};
+}
 
 std::istream &
 pc::operator>>(std::istream & in, event_fields & fields)
 {
   in >> fields.time >> fields.id >> fields.str_data;
+  if (!std::regex_match(fields.str_data, std::regex("^[a-z0-9_-]+$")))
+  {
+    in.setstate(std::ios::failbit);
+    return in;
+  }
   if (!in.eof())
   {
     std::size_t tmp = 0;
@@ -41,6 +55,12 @@ pc::event_call(club & m_club, const event_fields & fields)
     {12, event_12},
     {13, event_13}
   };
+
+  if (last_call > fields.time)
+  {
+    throw std::out_of_range("bad time");
+  }
+  last_call = fields.time;
 
   return event_map.at(fields.id)(m_club, fields.time, fields.str_data, fields.sub_data.value_or(0));
 }
