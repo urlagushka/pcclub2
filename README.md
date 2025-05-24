@@ -6,7 +6,7 @@
 -- если не установлен gcc14
 brew install gcc
 
-git clone https://github.com/urlagushka/pcclub.git
+git clone https://github.com/urlagushka/pcclub2.git
 
 cd pcclub
 mkdir build && cd build
@@ -24,7 +24,7 @@ make
 
 #### Linux
 ```
-git clone https://github.com/urlagushka/pcclub.git
+git clone https://github.com/urlagushka/pcclub2.git
 
 cd pcclub
 mkdir build && cd build
