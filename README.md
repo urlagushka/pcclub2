@@ -20,6 +20,9 @@ make
 
 -- запуск программы
 ./pcclub_example <src.txt>
+
+-- запуск тестов
+ctest -V
 ```
 
 #### Linux
@@ -35,5 +38,8 @@ make
 
 -- запуск программы
 ./pcclub_example <src.txt>
+
+-- запуск тестов
+ctest -V
 ```
 
