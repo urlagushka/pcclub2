@@ -8,7 +8,7 @@ brew install gcc
 
 git clone https://github.com/urlagushka/pcclub2.git
 
-cd pcclub
+cd pcclub2
 mkdir build && cd build
 
 cmake -DCMAKE_C_COMPILER=/opt/homebrew/Cellar/gcc/14.2.0_1/bin/gcc-14 \
@@ -29,7 +29,7 @@ ctest -V
 ```
 git clone https://github.com/urlagushka/pcclub2.git
 
-cd pcclub
+cd pcclub2
 mkdir build && cd build
 
 cmake ..
