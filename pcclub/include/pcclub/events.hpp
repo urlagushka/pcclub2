@@ -23,8 +23,14 @@ namespace pc
   std::istream & operator>>(std::istream & in, event_fields & fields);
   std::ostream & operator<<(std::ostream & out, const event_fields & fields);
 
+  struct event_ret
+  {
+    std::size_t next_event;
+    std::string str_data;
+    std::optional< std::size_t > sub_data;
+  };
+
   using ts = time_stamp;
-  using event_ret = std::pair< std::string, std::size_t >;
 
   event_ret
   event_call(club & m_club, const event_fields & fields);

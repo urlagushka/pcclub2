@@ -54,8 +54,10 @@ int main(int argc, char ** argv)
     while (fields.id != 0)
     {
       auto event_out = pc::event_call(club, fields);
-      fields.str_data = event_out.first;
-      fields.id = event_out.second;
+      fields.sub_data = event_out.sub_data;
+      fields.str_data = event_out.str_data;
+      fields.id = event_out.next_event;
+      
       if (fields.id != 0)
       {
         std::cout << fields << "\n";

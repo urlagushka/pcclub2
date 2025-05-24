@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 
 pc::club::club(const ts & open, const ts & close, std::size_t price, std::size_t table_size):
   __client(0),
@@ -49,7 +48,7 @@ pc::club::pop_client(const client & m_client)
   __client.erase(d_client);  
 }
 
-std::optional< std::string >
+std::optional< pc::club::client_table >
 pc::club::satisfy_queue(const ts & m_ts)
 {
   if (__client.size() == 0)
@@ -64,8 +63,9 @@ pc::club::satisfy_queue(const ts & m_ts)
   }
   auto n_client = __client.front();
   n_client.time.in = m_ts;
-  take_table(n_client, std::distance(__table.begin(), found) + 1);
-  return n_client.name;
+  std::size_t table_id = std::distance(__table.begin(), found) + 1;
+  take_table(n_client, table_id);
+  return std::make_pair(n_client.name, table_id);
 }
 
 void

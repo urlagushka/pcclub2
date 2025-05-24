@@ -1,7 +1,6 @@
 #include <pcclub/events.hpp>
 
 #include <unordered_map>
-#include <iostream>
 
 std::istream &
 pc::operator>>(std::istream & in, event_fields & fields)
@@ -60,14 +59,14 @@ pc::event_1(club & m_club, const ts & m_ts, const std::string & name, std::size_
   }
   catch (const std::runtime_error & error)
   {
-    return std::make_pair(error.what(), 13);
+    return {13, error.what()};
   }
 
-  return std::make_pair(name, 0);
+  return {0, name};
 }
 
 pc::event_ret
-pc::event_2(club & m_club, const ts & m_ts, const std::string & name, std::size_t table)
+pc::event_2(club & m_club, const ts & m_ts, const std::string & name, std::size_t table_id)
 {
   client m_client = {
     name,
@@ -76,29 +75,29 @@ pc::event_2(club & m_club, const ts & m_ts, const std::string & name, std::size_
 
   try
   {
-    m_club.take_table(m_client, table);
+    m_club.take_table(m_client, table_id);
   }
   catch (const std::runtime_error & error)
   {
-    return std::make_pair(error.what(), 13);
+    return {13, error.what()};
   }
 
-  return std::make_pair(std::format("{} {}", name, table), 0);
+  return {0, name, table_id};
 }
 
 pc::event_ret
-pc::event_3(club & m_club, const ts & m_ts, const std::string & name, std::size_t sub_data)
+pc::event_3(club & m_club, const ts & m_ts, const std::string & name, std::size_t)
 {
   if (m_club.are_free_table())
   {
-    return std::make_pair("ICanWaitNoLonger", 13);
+    return {13, "ICanWaitNoLonger!"};
   }
   if (m_club.client_size() > m_club.table_size())
   {
-    return std::make_pair(name, 11);
+    return {11, name};
   }
 
-  return std::make_pair(name, 0);
+  return {0, name};
 }
 
 pc::event_ret
@@ -115,14 +114,14 @@ pc::event_4(club & m_club, const ts & m_ts, const std::string & name, std::size_
   }
   catch (const std::runtime_error & error)
   {
-    return std::make_pair(error.what(), 13);
+    return {13, error.what()};
   }
 
   if (m_club.client_size() != 0)
   {
-    return std::make_pair(name, 12);
+    return {12, name};
   }
-  return std::make_pair(name, 0);
+  return {0, name};
 }
 
 pc::event_ret
@@ -139,25 +138,25 @@ pc::event_11(club & ft_club, const ts & m_ts, const std::string & name, std::siz
   }
   catch (const std::runtime_error & error)
   {
-    return std::make_pair(error.what(), 13);
+    return {13, error.what()};
   }
 
-  return std::make_pair(name, 0);
+  return {0, name};
 }
 
 pc::event_ret
-pc::event_12(club & m_club, const ts & m_ts, const std::string & str_data, std::size_t)
+pc::event_12(club & m_club, const ts & m_ts, const std::string &, std::size_t)
 {
   auto ret = m_club.satisfy_queue(m_ts);
   if (ret.has_value())
   {
-    return std::make_pair(ret.value(), 0);
+    return {0, ret.value().first, ret.value().second};
   }
-  return std::make_pair("client queue not changed", 0);
+  return {0, ""};
 }
 
 pc::event_ret
 pc::event_13(club & m_club, const ts & m_ts, const std::string & error, std::size_t)
 {
-  return std::make_pair(error, 0);
+  return {0, error};
 }

@@ -14,6 +14,7 @@ namespace pc
   class club
   {
     using ts = time_stamp;
+    using client_table = std::pair< std::string, std::size_t >;
     using profit = std::tuple< std::size_t, std::size_t, ts >;
     public:
       club() = delete;
@@ -21,7 +22,7 @@ namespace pc
 
       void add_client(const client & m_client);
       void pop_client(const client & m_client);
-      std::optional< std::string > satisfy_queue(const ts & m_ts);
+      std::optional< client_table > satisfy_queue(const ts & m_ts);
 
       void take_table(const client & m_client, std::size_t table_id);
       void free_table(const client & m_client);
