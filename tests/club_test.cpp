@@ -78,14 +78,12 @@ TEST(club_test, take_table_place_is_busy)
 TEST(club_test, free_table_with_profit)
 {
   pc::club club({9, 0}, {19, 0}, 10, 3);
-  pc::client client{"client1", {pc::time_stamp{9, 30}, std::nullopt}};
+  pc::client client{"client1", {pc::time_stamp{9, 30}, pc::time_stamp{10, 30}}};
 
   club.add_client(client);
   club.take_table(client, 1);
-  pc::client leaving_client = client;
-  leaving_client.time.out = {10, 30};
-  club.free_table(leaving_client);
-  
+  club.free_table(client);
+
   EXPECT_EQ(club.client_size(), 1);
   auto profits = club.lock_in_profits();
   EXPECT_EQ(std::get<1>(profits[0]), 10);
@@ -94,7 +92,7 @@ TEST(club_test, free_table_with_profit)
 TEST(club_test, satisfy_queue)
 {
   pc::club club({9, 0}, {19, 0}, 10, 3);
-  pc::client client1{"client1", {pc::time_stamp{9, 30}, std::nullopt}};
+  pc::client client1{"client1", {pc::time_stamp{9, 30}, pc::time_stamp{13, 30}}};
   pc::client client2{"client2", {pc::time_stamp{10, 30}, std::nullopt}};
   pc::client client3{"client3", {pc::time_stamp{11, 30}, std::nullopt}};
   pc::client client4{"client4", {pc::time_stamp{12, 30}, std::nullopt}};
@@ -108,11 +106,9 @@ TEST(club_test, satisfy_queue)
   club.take_table(client3, 3);
   
   club.add_client(client4);
-  
-  client1.time.out = {13, 0};
   club.free_table(client1);
 
-  auto result = club.satisfy_queue({14, 0});
+  auto result = club.satisfy_queue({14, 30});
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->first, "client4");
   EXPECT_EQ(result->second, 1);
